@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>설문조사</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      padding-top: 50px;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .results {
+      margin-top: 30px;
+    }
+    .results li {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>좋아하는 색은?</h1>
+    <form id="surveyForm">
+      <label><input type="radio" name="color" value="빨강"> 빨강</label>
+      <label><input type="radio" name="color" value="파랑"> 파랑</label>
+      <label><input type="radio" name="color" value="초록"> 초록</label>
+      <button type="submit">제출</button>
+    </form>
+    <div class="results" id="results" style="display:none;">
+      <h3>현재까지의 결과:</h3>
+      <ul id="resultList"></ul>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('surveyForm');
+    const resultsDiv = document.getElementById('results');
+    const resultList = document.getElementById('resultList');
+
+    const getData = () => {
+      return JSON.parse(localStorage.getItem('surveyResults') || '{}');
+    };
+
+    const saveData = (color) => {
+      const data = getData();
+      data[color] = (data[color] || 0) + 1;
+      localStorage.setItem('surveyResults', JSON.stringify(data));
+    };
+
+    const renderResults = () => {
+      const data = getData();
+      resultList.innerHTML = '';
+      for (const [color, count] of Object.entries(data)) {
+        const li = document.createElement('li');
+        li.textContent = `${color}: ${count}표`;
+        resultList.appendChild(li);
+      }
+      resultsDiv.style.display = 'block';
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const selected = form.color.value;
+      if (!selected) {
+        alert('색상을 선택해 주세요!');
+        return;
+      }
+      saveData(selected);
+      renderResults();
+    });
+
+    // 페이지 로드시 결과 표시
+    renderResults();
+  </script>
+</body>
+</html>
